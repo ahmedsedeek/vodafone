@@ -3,7 +3,7 @@
 // ============================================
 
 import { NextRequest } from 'next/server';
-import { AttachmentService } from '@/lib/services';
+import { attachmentsApi } from '@/lib/api-production';
 import { successResponse, handleApiError } from '@/lib/api-response';
 
 // POST /api/attachments - Upload attachment
@@ -21,16 +21,7 @@ export async function POST(request: NextRequest) {
       throw new Error('معرف المعاملة مطلوب');
     }
 
-    // Convert file to buffer
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    const attachment = await AttachmentService.uploadBuffer(
-      transactionId,
-      buffer,
-      file.name,
-      file.type
-    );
+    const attachment = await attachmentsApi.upload(transactionId, file);
 
     return successResponse(attachment, 'تم رفع المرفق بنجاح', 201);
   } catch (error) {
