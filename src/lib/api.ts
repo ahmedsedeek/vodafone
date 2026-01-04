@@ -65,6 +65,11 @@ export const walletsApi = {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
+
+  delete: (id: string) =>
+    fetchApi<void>(`/wallets/${id}`, {
+      method: 'DELETE',
+    }),
 };
 
 // ==================== CLIENTS ====================
@@ -90,6 +95,11 @@ export const clientsApi = {
     fetchApi<ClientStatement>(
       `/clients/${clientId}/statement?from=${from}&to=${to}`
     ),
+
+  delete: (id: string) =>
+    fetchApi<void>(`/clients/${id}`, {
+      method: 'DELETE',
+    }),
 };
 
 // ==================== TRANSACTIONS ====================
@@ -112,6 +122,11 @@ export const transactionsApi = {
     fetchApi<Transaction>('/transactions', {
       method: 'POST',
       body: JSON.stringify(data),
+    }),
+
+  delete: (id: string) =>
+    fetchApi<void>(`/transactions/${id}`, {
+      method: 'DELETE',
     }),
 };
 

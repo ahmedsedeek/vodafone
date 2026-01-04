@@ -60,4 +60,11 @@ export class WalletService {
     const wallets = await walletsApi.getAll();
     return wallets.reduce((sum, w) => sum + (w.current_balance || 0), 0);
   }
+
+  /**
+   * Delete wallet
+   */
+  static async delete(walletId: string): Promise<void> {
+    return walletsApi.delete(walletId);
+  }
 }

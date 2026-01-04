@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { PlusIcon, UsersIcon, PhoneIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, UsersIcon, PhoneIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Header from '@/components/layout/Header';
 import { DataTable, Modal, Badge, LoadingSpinner, EmptyState } from '@/components/ui';
 import { ClientForm } from '@/components/forms';
@@ -53,6 +53,20 @@ export default function ClientsPage() {
 
   const handleRowClick = (client: Client) => {
     router.push(`/clients/${client.client_id}`);
+  };
+
+  const handleDelete = async (e: React.MouseEvent, client: Client) => {
+    e.stopPropagation(); // Prevent row click
+    if (!confirm(`هل أنت متأكد من حذف العميل "${client.client_name}"؟`)) {
+      return;
+    }
+    try {
+      await clientsApi.delete(client.client_id);
+      toast.success('تم حذف العميل بنجاح');
+      fetchClients();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'فشل في حذف العميل');
+    }
   };
 
   // Filter clients by search term
@@ -145,6 +159,19 @@ export default function ClientsPage() {
         <span className="text-gray-500 text-sm">
           {formatDateTime(client.created_at)}
         </span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'إجراءات',
+      render: (client: Client) => (
+        <button
+          onClick={(e) => handleDelete(e, client)}
+          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          title="حذف العميل"
+        >
+          <TrashIcon className="w-5 h-5" />
+        </button>
       ),
     },
   ];

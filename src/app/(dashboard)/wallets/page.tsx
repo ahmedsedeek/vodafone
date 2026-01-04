@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { PlusIcon, WalletIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, WalletIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Header from '@/components/layout/Header';
 import { DataTable, Modal, Badge, LoadingSpinner, EmptyState } from '@/components/ui';
 import { WalletForm } from '@/components/forms';
@@ -45,6 +45,19 @@ export default function WalletsPage() {
       throw error;
     } finally {
       setFormLoading(false);
+    }
+  };
+
+  const handleDelete = async (wallet: Wallet) => {
+    if (!confirm(`هل أنت متأكد من حذف المحفظة "${wallet.wallet_name}"؟`)) {
+      return;
+    }
+    try {
+      await walletsApi.delete(wallet.wallet_id);
+      toast.success('تم حذف المحفظة بنجاح');
+      fetchWallets();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'فشل في حذف المحفظة');
     }
   };
 
@@ -113,6 +126,19 @@ export default function WalletsPage() {
         <span className="text-gray-500 text-sm">
           {formatDateTime(wallet.created_at)}
         </span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'إجراءات',
+      render: (wallet: Wallet) => (
+        <button
+          onClick={() => handleDelete(wallet)}
+          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          title="حذف المحفظة"
+        >
+          <TrashIcon className="w-5 h-5" />
+        </button>
       ),
     },
   ];

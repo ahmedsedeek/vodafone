@@ -21,3 +21,16 @@ export async function GET(
     return handleApiError(error);
   }
 }
+
+// DELETE /api/clients/[id] - Delete client
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    await ClientService.delete(params.id);
+    return successResponse(null, 'تم حذف العميل بنجاح');
+  } catch (error) {
+    return handleApiError(error);
+  }
+}

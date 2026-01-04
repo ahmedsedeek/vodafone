@@ -88,4 +88,11 @@ export class ClientService {
     const clients = await clientsApi.getAll();
     return clients.reduce((sum, c) => sum + (c.total_debt || 0), 0);
   }
+
+  /**
+   * Delete client
+   */
+  static async delete(clientId: string): Promise<void> {
+    return clientsApi.delete(clientId);
+  }
 }

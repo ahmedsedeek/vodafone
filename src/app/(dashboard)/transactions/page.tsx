@@ -7,6 +7,7 @@ import {
   ArrowsRightLeftIcon,
   FunnelIcon,
   PhotoIcon,
+  TrashIcon,
 } from '@heroicons/react/24/outline';
 import Header from '@/components/layout/Header';
 import { DataTable, Modal, Badge, LoadingSpinner, EmptyState, DateRangePicker } from '@/components/ui';
@@ -91,6 +92,20 @@ export default function TransactionsPage() {
   const openUploadModal = (tx: Transaction) => {
     setSelectedTransaction(tx);
     setIsUploadModalOpen(true);
+  };
+
+  const handleDelete = async (e: React.MouseEvent, tx: Transaction) => {
+    e.stopPropagation();
+    if (!confirm('هل أنت متأكد من حذف هذه المعاملة؟')) {
+      return;
+    }
+    try {
+      await transactionsApi.delete(tx.transaction_id);
+      toast.success('تم حذف المعاملة بنجاح');
+      fetchData();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'فشل في حذف المعاملة');
+    }
   };
 
   const columns = [
@@ -183,6 +198,19 @@ export default function TransactionsPage() {
             رفع
           </button>
         )
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'إجراءات',
+      render: (tx: Transaction) => (
+        <button
+          onClick={(e) => handleDelete(e, tx)}
+          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          title="حذف المعاملة"
+        >
+          <TrashIcon className="w-5 h-5" />
+        </button>
       ),
     },
   ];

@@ -71,8 +71,8 @@ export default function DashboardPage() {
     );
   }
 
-  // Show empty state if no data
-  if (!kpis || kpis.totalClients === 0) {
+  // Show empty state if no data at all (no wallets AND no clients)
+  if (!kpis || (kpis.totalClients === 0 && kpis.totalWalletBalance === 0)) {
     return (
       <div>
         <Header title={AR.nav.dashboard} subtitle={AR.appTagline} />

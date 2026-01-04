@@ -48,4 +48,11 @@ export class TransactionService {
       transaction_date: input.transaction_date,
     });
   }
+
+  /**
+   * Delete transaction
+   */
+  static async delete(transactionId: string): Promise<void> {
+    return transactionsApi.delete(transactionId);
+  }
 }

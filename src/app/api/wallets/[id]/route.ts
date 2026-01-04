@@ -36,3 +36,16 @@ export async function PUT(
     return handleApiError(error);
   }
 }
+
+// DELETE /api/wallets/[id] - Delete wallet
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    await WalletService.delete(params.id);
+    return successResponse(null, 'تم حذف المحفظة بنجاح');
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
