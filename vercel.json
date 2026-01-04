@@ -3,12 +3,6 @@
   "outputDirectory": ".next",
   "framework": "nextjs",
   "regions": ["fra1"],
-  "env": {
-    "APPS_SCRIPT_URL": "@apps-script-url",
-    "APPS_SCRIPT_API_KEY": "@apps-script-api-key",
-    "ADMIN_PASSWORD": "@admin-password",
-    "SESSION_SECRET": "@session-secret"
-  },
   "headers": [
     {
       "source": "/api/(.*)",
