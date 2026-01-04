@@ -65,6 +65,17 @@ async function apiFetch<T>(
   body?: Record<string, unknown>,
   params?: Record<string, string>
 ): Promise<T> {
+  // Check if environment variables are set
+  if (!APPS_SCRIPT_URL) {
+    console.error('APPS_SCRIPT_URL is not set. NEXT_PUBLIC_APPS_SCRIPT_URL:', process.env.NEXT_PUBLIC_APPS_SCRIPT_URL);
+    throw new Error('Configuration error: APPS_SCRIPT_URL is not configured');
+  }
+
+  if (!API_KEY) {
+    console.error('API_KEY is not set. APPS_SCRIPT_API_KEY:', process.env.APPS_SCRIPT_API_KEY ? '[SET]' : '[NOT SET]');
+    throw new Error('Configuration error: APPS_SCRIPT_API_KEY is not configured');
+  }
+
   // Build URL with query params
   const url = new URL(APPS_SCRIPT_URL);
   url.searchParams.set('path', path);
@@ -89,8 +100,19 @@ async function apiFetch<T>(
     options.body = JSON.stringify(body);
   }
 
+  console.log(`[API] Fetching: ${path} (${method})`);
+
   const response = await fetch(url.toString(), options);
-  const data: ApiResponse<T> = await response.json();
+  const text = await response.text();
+
+  // Try to parse as JSON
+  let data: ApiResponse<T>;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    console.error(`[API] Invalid JSON response for ${path}:`, text.substring(0, 200));
+    throw new Error(`Invalid response from server: ${text.substring(0, 100)}`);
+  }
 
   if (!data.success) {
     throw new Error(data.message || 'API request failed');
