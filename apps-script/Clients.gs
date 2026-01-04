@@ -218,6 +218,40 @@ function getActiveClientsCount() {
 }
 
 /**
+ * Delete a client
+ */
+function handleDeleteClient(clientId) {
+  const client = getRowById(SHEETS.CLIENTS, 'client_id', clientId);
+
+  if (!client) {
+    return jsonResponse({ success: false, message: 'العميل غير موجود' }, 404);
+  }
+
+  // Check if client has transactions
+  const transactions = filterRows(SHEETS.TRANSACTIONS, t => t.client_id === clientId);
+  if (transactions.length > 0) {
+    return jsonResponse({
+      success: false,
+      message: 'لا يمكن حذف العميل لأنه يحتوي على معاملات'
+    }, 400);
+  }
+
+  // Delete client phones first
+  const phones = filterRows(SHEETS.CLIENT_PHONES, p => p.client_id === clientId);
+  phones.forEach(p => {
+    deleteRow(SHEETS.CLIENT_PHONES, 'phone_id', p.phone_id);
+  });
+
+  // Delete client
+  deleteRow(SHEETS.CLIENTS, 'client_id', clientId);
+
+  return jsonResponse({
+    success: true,
+    message: 'تم حذف العميل بنجاح'
+  });
+}
+
+/**
  * Get client statement for date range
  */
 function handleGetClientStatement(clientId, params) {

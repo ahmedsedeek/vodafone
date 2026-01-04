@@ -178,6 +178,10 @@ export const walletsApi = {
   ): Promise<Wallet> {
     return apiFetch<Wallet>(`wallets/${walletId}`, 'POST', input);
   },
+
+  async delete(walletId: string): Promise<void> {
+    return apiFetch<void>(`wallets/${walletId}/delete`, 'POST');
+  },
 };
 
 // ============================================
@@ -221,6 +225,10 @@ export const clientsApi = {
   ): Promise<ClientStatement> {
     return apiFetch<ClientStatement>(`clients/${clientId}/statement`, 'GET', undefined, params);
   },
+
+  async delete(clientId: string): Promise<void> {
+    return apiFetch<void>(`clients/${clientId}/delete`, 'POST');
+  },
 };
 
 // ============================================
@@ -251,6 +259,20 @@ export const transactionsApi = {
     transaction_date?: string;
   }): Promise<Transaction> {
     return apiFetch<Transaction>('transactions', 'POST', input);
+  },
+
+  async delete(transactionId: string): Promise<void> {
+    return apiFetch<void>(`transactions/${transactionId}/delete`, 'POST');
+  },
+};
+
+// ============================================
+// Seed API
+// ============================================
+
+export const seedApi = {
+  async seedData(): Promise<void> {
+    return apiFetch<void>('seed', 'POST');
   },
 };
 
@@ -379,6 +401,7 @@ export const productionApi = {
   attachments: attachmentsApi,
   reports: reportsApi,
   pdf: pdfApi,
+  seed: seedApi,
 };
 
 export default productionApi;

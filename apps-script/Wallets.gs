@@ -178,3 +178,30 @@ function getTotalWalletBalance() {
   const wallets = getAllRows(SHEETS.WALLETS);
   return wallets.reduce((sum, w) => sum + parseNumber(w.current_balance), 0);
 }
+
+/**
+ * Delete a wallet
+ */
+function handleDeleteWallet(walletId) {
+  const wallet = getRowById(SHEETS.WALLETS, 'wallet_id', walletId);
+
+  if (!wallet) {
+    return jsonResponse({ success: false, message: 'المحفظة غير موجودة' }, 404);
+  }
+
+  // Check if wallet has transactions
+  const transactions = filterRows(SHEETS.TRANSACTIONS, t => t.wallet_id === walletId);
+  if (transactions.length > 0) {
+    return jsonResponse({
+      success: false,
+      message: 'لا يمكن حذف المحفظة لأنها تحتوي على معاملات. يمكنك إلغاء تفعيلها بدلاً من ذلك.'
+    }, 400);
+  }
+
+  deleteRow(SHEETS.WALLETS, 'wallet_id', walletId);
+
+  return jsonResponse({
+    success: true,
+    message: 'تم حذف المحفظة بنجاح'
+  });
+}

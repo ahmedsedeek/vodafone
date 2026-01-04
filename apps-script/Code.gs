@@ -120,6 +120,10 @@ function routeRequest(path, method, params, body) {
     const walletId = path.split('/')[1];
     return handleUpdateWallet(walletId, body);
   }
+  if (path.match(/^wallets\/[\w-]+\/delete$/) && method === 'POST') {
+    const walletId = path.split('/')[1];
+    return handleDeleteWallet(walletId);
+  }
 
   // Client routes
   if (path === 'clients' && method === 'GET') {
@@ -140,6 +144,10 @@ function routeRequest(path, method, params, body) {
     const clientId = path.split('/')[1];
     return handleGetClientStatement(clientId, params);
   }
+  if (path.match(/^clients\/[\w-]+\/delete$/) && method === 'POST') {
+    const clientId = path.split('/')[1];
+    return handleDeleteClient(clientId);
+  }
 
   // Transaction routes
   if (path === 'transactions' && method === 'GET') {
@@ -147,6 +155,10 @@ function routeRequest(path, method, params, body) {
   }
   if (path === 'transactions' && method === 'POST') {
     return handleCreateTransaction(body);
+  }
+  if (path.match(/^transactions\/[\w-]+\/delete$/) && method === 'POST') {
+    const transactionId = path.split('/')[1];
+    return handleDeleteTransaction(transactionId);
   }
 
   // Payment routes
@@ -183,6 +195,11 @@ function routeRequest(path, method, params, body) {
   if (path.match(/^clients\/[\w-]+\/statement\/pdf$/) && method === 'GET') {
     const clientId = path.split('/')[1];
     return handleGenerateStatementPdf(clientId, params);
+  }
+
+  // Seed data (for development/testing)
+  if (path === 'seed' && method === 'POST') {
+    return handleSeedData();
   }
 
   // 404

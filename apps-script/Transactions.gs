@@ -247,3 +247,44 @@ function getUnpaidTransactionsByClient(clientId) {
     amount_due: parseNumber(t.amount_due)
   }));
 }
+
+/**
+ * Delete a transaction
+ */
+function handleDeleteTransaction(transactionId) {
+  const transaction = getRowById(SHEETS.TRANSACTIONS, 'transaction_id', transactionId);
+
+  if (!transaction) {
+    return jsonResponse({ success: false, message: 'المعاملة غير موجودة' }, 404);
+  }
+
+  // Check if transaction has payments
+  const payments = filterRows(SHEETS.PAYMENTS, p => p.transaction_id === transactionId);
+  if (payments.length > 0) {
+    return jsonResponse({
+      success: false,
+      message: 'لا يمكن حذف المعاملة لأنها تحتوي على دفعات'
+    }, 400);
+  }
+
+  const walletId = transaction.wallet_id;
+  const clientId = transaction.client_id;
+
+  // Delete the transaction
+  deleteRow(SHEETS.TRANSACTIONS, 'transaction_id', transactionId);
+
+  // Recalculate wallet balance
+  if (walletId) {
+    recalculateWalletBalance(walletId);
+  }
+
+  // Update client debt
+  if (clientId) {
+    updateClientDebt(clientId);
+  }
+
+  return jsonResponse({
+    success: true,
+    message: 'تم حذف المعاملة بنجاح'
+  });
+}
