@@ -45,6 +45,14 @@ export class ReportService {
    * Get top clients by volume
    */
   static async getTopClients(limit: number = 10): Promise<TopClient[]> {
-    return reportsApi.getTopClients(limit);
+    const apiClients = await reportsApi.getTopClients(limit);
+    // Transform API response to match local TopClient type
+    return apiClients.map(c => ({
+      client_id: c.clientId,
+      client_name: c.clientName,
+      volume: c.totalVolume,
+      count: c.transactionCount,
+      profit: c.totalFees,
+    }));
   }
 }
