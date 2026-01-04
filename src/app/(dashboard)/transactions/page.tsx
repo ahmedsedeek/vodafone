@@ -15,7 +15,7 @@ import { TransactionForm, FileUpload } from '@/components/forms';
 import { AR, TRANSACTION_TYPE_COLORS, PAYMENT_STATUS_COLORS } from '@/lib/constants';
 import { transactionsApi, walletsApi, clientsApi, attachmentsApi } from '@/lib/api';
 import { Transaction, Wallet, Client, CreateTransactionInput, TransactionFilters } from '@/types';
-import { formatCurrency, formatDate, getMonthStart, todayDate } from '@/lib/utils';
+import { formatCurrency, formatDate, todayDate } from '@/lib/utils';
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -28,11 +28,8 @@ export default function TransactionsPage() {
   const [formLoading, setFormLoading] = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
 
-  // Filters
-  const [filters, setFilters] = useState<TransactionFilters>({
-    from: getMonthStart(),
-    to: todayDate(),
-  });
+  // Filters - default to empty (show all)
+  const [filters, setFilters] = useState<TransactionFilters>({});
   const [showFilters, setShowFilters] = useState(false);
 
   const fetchData = async () => {
@@ -260,11 +257,11 @@ export default function TransactionsPage() {
 
         {/* Filters */}
         <div className="mb-4 space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <DateRangePicker
-              from={filters.from || getMonthStart()}
-              to={filters.to || todayDate()}
-              onChange={(from, to) => setFilters({ ...filters, from, to })}
+              from={filters.from || ''}
+              to={filters.to || ''}
+              onChange={(from, to) => setFilters({ ...filters, from: from || undefined, to: to || undefined })}
             />
             <button
               onClick={() => setShowFilters(!showFilters)}
@@ -338,7 +335,7 @@ export default function TransactionsPage() {
               </div>
               <div className="mt-4 flex justify-end">
                 <button
-                  onClick={() => setFilters({ from: getMonthStart(), to: todayDate() })}
+                  onClick={() => setFilters({})}
                   className="btn btn-ghost text-sm"
                 >
                   إعادة تعيين

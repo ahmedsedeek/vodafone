@@ -10,7 +10,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar />
-      <main className="mr-64 min-h-screen">
+      <main className="md:mr-64 min-h-screen">
         {children}
       </main>
     </div>
